@@ -28,6 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+pandoc_filters = [
+    './pandoc-filters/pandoc-katex/pandoc-katex.js'
+]
+
 # other variables
 db.init()
 
@@ -35,7 +39,7 @@ def md(x):
     ctxt = pp.convert_text(x,
                     to='html5',
                     format='md',
-                    filters='/home/smgr/Documents/projects/_sites/samgriesemer.com/site/pandoc/filters/pandoc-katex/pandoc-katex.js')
+                    filters=pandoc_filters)
     return re.sub(
         pattern=r'^<p>(.*)</p>$',
         repl=lambda m: m.group(1),

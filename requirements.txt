@@ -1,3 +1,8 @@
 fastapi
 uvicorn
+sqlalchemy
 mem
+xdg
+python-dateutil
+jinja2
+pypandoc

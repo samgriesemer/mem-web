@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import config from '../config.js'
 import * as util from './mixin.js'
 
 import Review from './components/Review.vue'
