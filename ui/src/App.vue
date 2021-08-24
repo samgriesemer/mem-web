@@ -58,7 +58,10 @@ import Review from './components/Review.vue'
 import Study from './components/Study.vue'
 import Deck from './components/Deck.vue'
 
-let api_url = 'http://192.168.1.69:8001';
+//let api_url = 'http://192.168.1.69:8001';
+console.log(config);
+let api_url = config.api_url;
+console.log(api_url);
 
 const mixin = {
     methods: util
