@@ -1,2 +1,3 @@
 CROSS_ORIGIN_WHITELIST = []
+DB_PATH = None
 

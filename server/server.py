@@ -13,7 +13,7 @@ from pydantic import BaseModel
 import sqlalchemy as sa
 import pypandoc as pp
 
-from serverconfig import CROSS_ORIGIN_WHITELIST
+from serverconfig import CROSS_ORIGIN_WHITELIST, DB_PATH
 
 # app variables
 app = FastAPI()
@@ -31,7 +31,7 @@ pandoc_filters = [
 ]
 
 # other variables
-db.init()
+db.init(DB_PATH)
 
 def md(x):
     ctxt = pp.convert_text(x,
