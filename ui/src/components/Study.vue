@@ -32,9 +32,11 @@
 </template>
 
 <script>
+import config from '../../config.js'
 import * as util from '../mixin.js'
 
-let api_url = 'http://192.168.1.69:8001';
+//let api_url = 'http://192.168.1.69:8001';
+let api_url = config.api_url;
 
 const mixin = {
     methods: util
