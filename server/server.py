@@ -5,7 +5,6 @@ from mem import db, cmd, cli_args
 from mem.cmd import review, study
 from mem.arg_types import Mode
 
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,7 +12,7 @@ from pydantic import BaseModel
 import sqlalchemy as sa
 import pypandoc as pp
 
-from serverconfig import CROSS_ORIGIN_WHITELIST, DB_PATH
+from serverconfig import CROSS_ORIGIN_WHITELIST
 
 # app variables
 app = FastAPI()
