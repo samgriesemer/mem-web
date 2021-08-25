@@ -5,24 +5,22 @@ from mem import db, cmd, cli_args
 from mem.cmd import review, study
 from mem.arg_types import Mode
 
-import sqlalchemy as sa
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+import sqlalchemy as sa
 import pypandoc as pp
+
+from serverconfig import CROSS_ORIGIN_WHITELIST, DB_PATH
 
 # app variables
 app = FastAPI()
 
-origins = [
-    "*"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=CROSS_ORIGIN_WHITELIST,
     allow_credentials=True,
     allow_methods=["*", "POST"],
     allow_headers=["*"],
@@ -33,7 +31,7 @@ pandoc_filters = [
 ]
 
 # other variables
-db.init()
+db.init(DB_PATH)
 
 def md(x):
     ctxt = pp.convert_text(x,
