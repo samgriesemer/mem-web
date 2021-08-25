@@ -1,3 +1,4 @@
-CROSS_ORIGIN_WHITELIST = []
-DB_PATH = None
+CROSS_ORIGIN_WHITELIST = [
+    'http://localhost:8000'
+]
 
