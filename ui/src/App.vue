@@ -58,10 +58,7 @@ import Review from './components/Review.vue'
 import Study from './components/Study.vue'
 import Deck from './components/Deck.vue'
 
-//let api_url = 'http://192.168.1.69:8001';
-console.log(config);
 let api_url = config.api_url;
-console.log(api_url);
 
 const mixin = {
     methods: util
@@ -120,10 +117,6 @@ export default {
                     
                     if (data.time_remaining) {
                         let time_remaining = parseInt(data.time_remaining);
-
-                        //setTimeout(() => {
-                            //return this.get_review_card();
-                        //}, time_remaining*1000);
 
                         this.review_timer = this.countdown(
                             time_remaining,
