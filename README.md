@@ -7,6 +7,9 @@ HTTP API for interacting with `mem` and basic web UI.
   cd ui/
   npm install
   ```
+
+  The Makefile in `ui/` can also be used to build the Vue.js app and copy the files to
+  another location.
 - The HTTP API is written in Python using FastAPI. This is a simple HTTP interface to the
   underlying `mem` library, which ultimately just interacts with a local SQLite database
   file. Running this requires the `mem` package to be installed, along with the other

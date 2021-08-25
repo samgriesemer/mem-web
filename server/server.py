@@ -30,7 +30,7 @@ pandoc_filters = [
 ]
 
 # other variables
-db.init(DB_PATH)
+db.init()
 
 def md(x):
     ctxt = pp.convert_text(x,
