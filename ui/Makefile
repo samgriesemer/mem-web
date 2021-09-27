@@ -1,4 +1,4 @@
-OUT?=/home/smgr/Documents/projects/_sites/samgriesemer.com/site/theme/static/webapp/mem
+OUT?=/home/smgr/Documents/projects/samgriesemer.com/site/theme/static/webapp/mem
 
 build:
 	npm run build

@@ -1,8 +1,8 @@
 import re
-from typing import Optional
+from typing import Optional, List
 
 from mem import db, cmd, cli_args
-from mem.cmd import review, study
+from mem.cmd import review, study, create_card
 from mem.arg_types import Mode
 
 from fastapi import FastAPI
@@ -11,7 +11,6 @@ from pydantic import BaseModel
 
 import sqlalchemy as sa
 import pypandoc as pp
-
 from serverconfig import CROSS_ORIGIN_WHITELIST
 
 # app variables
@@ -53,6 +52,27 @@ def exec_cmd(cmd):
 
 
 def parse_html(card):
+    def repl(g, d=''):
+        s = '<span style="color:blue">{}</span>'
+        def wrapped(m):
+            if g == 2:
+                return s.format(m.group(g))
+            elif g == 3:
+                if m.group(g):
+                    return s.format('['+m.group(g)+']')
+                return s.format(d)
+        return wrapped
+
+    if not card['answers']:
+        q = card['question']
+        card['question'] = create_card.CLOZE_REGEX.sub(
+            repl=repl(3, '???'),
+            string=q
+        )
+        card['answers'] = [create_card.CLOZE_REGEX.sub(
+            repl=repl(2),
+            string=q
+        )]
     return {
         'question': md(card['question']),
         'answers': md(', '.join(card['answers']))
@@ -62,10 +82,19 @@ def parse_html(card):
 class StudyCard(BaseModel):
     card_id: int
 
+
 class Feedback(BaseModel):
     card_id: int
     q: int
     text: Optional[str] = ''
+
+
+class NewCard(BaseModel):
+    question: str
+    answers: Optional[List[str]] = None
+    deck: str
+    tags: Optional[List[str]] = None
+
 
 
 @app.get("/review")
@@ -73,7 +102,6 @@ def http_review():
     with db.session_scope() as session:
         #out = review.review_any_deck(session, Mode.direct)
         out = review.review_any(session, Mode.direct)
-
         if out['card'] is not None:
             out['card']['html'] = parse_html(out['card'])
         return out
@@ -126,3 +154,16 @@ def http_post_study(sc: StudyCard):
     with db.session_scope() as session:
         card = study.post_study(session, sc.card_id)
         return {**vars(card)}
+
+@app.post("/create_card")
+def http_create_card(card: NewCard):
+    with db.session_scope() as session:
+        deck = db.get_deck_by_name(session, card.deck)
+        created_cards = create_card.create_card(
+            session,
+            deck,
+            card.question,
+            card.answers,
+            card.tags
+        )
+        return [{**vars(card)} for card in created_cards]

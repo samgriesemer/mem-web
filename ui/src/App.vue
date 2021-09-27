@@ -38,6 +38,15 @@
             </div>
         </div>
     </div>
+    <div class='post-col' id='create-card'>
+        <h1>Create card</h1><hr class='solid'>
+        <div class='create-card-container'>
+            <create-card
+                v-bind:decks="decks"
+                @create-card-post='handle_create_card_post'
+            />
+        </div>
+    </div>
     <div class='post-col' id='decks'>
         <h1>Decks</h1><hr class='solid'>
         <div class='row-2'>
@@ -57,6 +66,7 @@ import * as util from './mixin.js'
 import Review from './components/Review.vue'
 import Study from './components/Study.vue'
 import Deck from './components/Deck.vue'
+import CreateCard from './components/CreateCard.vue'
 
 let api_url = config.api_url;
 
@@ -71,6 +81,7 @@ export default {
         Review,
         Study,
         Deck,
+        CreateCard,
     },
     data() {
         return {
@@ -197,7 +208,11 @@ export default {
         },
         handle_study_next() {
             this.get_study_card();
-        }
+        },
+        handle_create_card_post() {
+            this.get_decks();
+            this.get_study_card();
+        },
     },
     mounted() {
         this.get_decks();
@@ -208,14 +223,14 @@ export default {
 </script>
 
 <style>
-.review-container, .study-container {
+.review-container, .study-container, .create-card-container {
     padding: 1em;
     border: 1px solid #444;
     border-radius: 4px;
     box-shadow: 8px 8px 8px -4px rgba(0,0,0,0.12);
 }
 
-#review > div, #study > div {
+#review > div, #study > div, #create-card > div {
     margin-top: 1em;
     margin-bottom: 3em;
 }
