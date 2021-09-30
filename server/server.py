@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 import sqlalchemy as sa
 import pypandoc as pp
+import subprocess as subp
 from serverconfig import CROSS_ORIGIN_WHITELIST
 
 # app variables
@@ -31,16 +32,26 @@ pandoc_filters = [
 # other variables
 db.init()
 
+def conversion_wrapper(content, extra_args=None, filters=None):
+    if extra_args is None: extra_args = []
+    if filters is None: filters = []
+
+    cmd = ['pandoc', '--from', 'markdown', '--to', 'html5']
+    cmd += extra_args
+    cmd += [e for f in filters for e in ['-F', f]]
+
+    c = subp.check_output(cmd, text=True, input=content, stderr=subp.DEVNULL)
+    return c
+
+
 def md(x):
-    ctxt = pp.convert_text(x,
-                    to='html5',
-                    format='md',
-                    filters=pandoc_filters)
+    ctxt = conversion_wrapper(x, filters=pandoc_filters)
     return re.sub(
         pattern=r'^<p>(.*)</p>$',
         repl=lambda m: m.group(1),
         string=ctxt
     )
+
 
 def exec_cmd(cmd):
     commands = cmd.get_all_commands()
