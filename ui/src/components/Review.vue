@@ -1,11 +1,16 @@
 <template>
-    <card-question v-bind:card='review_card' />
+    <card-question
+        v-bind:card='review_card'
+        v-bind:cloze_active='cloze_active'
+        @edit-card="id => $emit('edit-card',id)"
+    />
 
     <div v-if='toggle_input' class='row review-input'>
         <textarea
             v-model='submitted_answer'
             placeholder='Optional answer'
             @keyup.enter.exact='submit_response'
+            style='resize:vertical'
         ></textarea>
         <button
             v-on:click='submit_response'
@@ -13,15 +18,14 @@
         >View answer</button>
     </div>
 
-    <div v-if='toggle_answer' class='row-2 review-answer'>
-        <div>
-            <div>
-                <card-answer v-bind:card='review_card' />
-            </div>
-            <div v-if='submitted_answer' class='review-answer-query'>
-                <span class='grey'><i>Submitted answer</i></span><hr class='solid'>
-                <h2 style='margin:0'>{{ submitted_answer }}</h2>
-            </div>
+    <div v-if='toggle_answer' class='review-answer'>
+        <card-answer v-bind:card='review_card' />
+    </div>
+
+    <div v-if='toggle_feedback' class='row review-answer'>
+        <div v-if='submitted_answer' class='review-answer-query'>
+            <span class='grey'><i>Submitted answer</i></span><hr class='solid'>
+            <h2 style='margin:0'>{{ submitted_answer }}</h2>
         </div>
 
         <div class='review-answer-feedback'>
@@ -76,14 +80,22 @@ export default {
     data() {
         return {
             submitted_answer: '',
+            cloze_active: false,
             toggle_input:  true,
             toggle_answer: false,
+            toggle_feedback: false,
         }
     },
     methods: {
         submit_response() {
             this.toggle_input  = false;
-            this.toggle_answer = true;
+            this.toggle_feedback = true;
+            if (this.review_card.html.cloze) {
+                this.cloze_active = true;
+            } else {
+                this.toggle_answer = true;
+            }
+            console.log(this.cloze_active);
         },
         post_feedback(q) {
             return this.http_post(api_url+'/post_feedback', {
@@ -93,7 +105,10 @@ export default {
             }, () => {
                 this.$emit('review-post');
                 this.toggle_input     = true;
+                this.toggle_feedback  = false;
                 this.toggle_answer    = false;
+                this.toggle_question  = true;
+                this.cloze_active     = false;
                 this.submitted_answer = '';
             });
         },
@@ -111,9 +126,9 @@ export default {
     margin-top: 2em;
 }
 
-.review-answer-query {
+/*.review-answer-query {
     margin-top: 1em;
-}
+}*/
 
 .review-answer-feedback > button {
     margin-bottom: 0.5em;

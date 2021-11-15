@@ -11,6 +11,7 @@
                 <review
                     v-bind:review_card='review_card'
                     @review-post='handle_review_post'
+                    @edit-card='refresh_update_card'
                 />
             </div>
             <div v-if='review_error_msg'>
@@ -38,12 +39,32 @@
             </div>
         </div>
     </div>
+    <div v-if='update_visible' class='post-col' id='update-card'>
+        <h1>Editing card <i>#{{ update_card.id }}</i></h1><hr class='solid'>
+        <div class='update-card-container'>
+            <update-card
+                v-bind:update_card='update_card'
+                v-bind:decks='decks'
+                @update-card-post='handle_update_card_post'
+            />
+        </div>
+    </div>
     <div class='post-col' id='create-card'>
         <h1>Create card</h1><hr class='solid'>
         <div class='create-card-container'>
             <create-card
                 v-bind:decks="decks"
                 @create-card-post='handle_create_card_post'
+            />
+        </div>
+    </div>
+    <div v-if='deck_viewer_visible' class='post-col' id='decks'>
+        <h1>Viewing deck</h1><hr class='solid'>
+        <div class='deck-viewer-container'>
+            <deck-viewer
+                v-bind:deck_index="deck_index"
+                v-bind:deck_id="view_deck_id"
+                @edit-card='refresh_update_card'
             />
         </div>
     </div>
@@ -54,6 +75,7 @@
                 v-for="deck in decks"
                 v-bind:deck="deck"
                 v-bind:key="deck.id"
+                @view-deck='handle_view_deck'
             />
         </div>
     </div>
@@ -66,7 +88,9 @@ import * as util from './mixin.js'
 import Review from './components/Review.vue'
 import Study from './components/Study.vue'
 import Deck from './components/Deck.vue'
+import DeckViewer from './components/DeckViewer.vue'
 import CreateCard from './components/CreateCard.vue'
+import UpdateCard from './components/UpdateCard.vue'
 
 let api_url = config.api_url;
 
@@ -81,7 +105,9 @@ export default {
         Review,
         Study,
         Deck,
+        DeckViewer,
         CreateCard,
+        UpdateCard,
     },
     data() {
         return {
@@ -102,6 +128,12 @@ export default {
             study_total: 0,
             study_freq_timer: null,
             study_freq_time: 0,
+            
+            update_visible: false,
+            update_card: {},
+
+            deck_viewer_visible: false,
+            view_deck_id: null,
         }
     },
     methods: {
@@ -202,6 +234,7 @@ export default {
                 this.get_study_card();
             }*/
         },
+
         handle_study_post() {
             this.get_decks();
             this.get_review_card();
@@ -209,9 +242,29 @@ export default {
         handle_study_next() {
             this.get_study_card();
         },
+
         handle_create_card_post() {
             this.get_decks();
             this.get_study_card();
+        },
+
+        refresh_update_card(id) {
+            console.log('update received id '+id);
+            //this.handle_update_card_post();
+            this.http_get(api_url+'/get_card/'+id, (data) => {
+                this.update_card = data;
+                console.log(data);
+                this.update_visible = true;
+            });
+        }, 
+        handle_update_card_post() {
+            this.update_card = {};
+            this.update_visible = false;
+            this.get_decks();
+        },
+        handle_view_deck(deck_id) {
+            this.view_deck_id = deck_id;
+            this.deck_viewer_visible = true;
         },
     },
     mounted() {
@@ -223,17 +276,28 @@ export default {
 </script>
 
 <style>
-.review-container, .study-container, .create-card-container {
+.review-container,
+.study-container,
+.create-card-container,
+.update-card-container
+.deck-viewer-container {
     padding: 1em;
     border: 1px solid #444;
     border-radius: 4px;
     box-shadow: 8px 8px 8px -4px rgba(0,0,0,0.12);
 }
 
-#review > div, #study > div, #create-card > div {
+#review > div,
+#study > div,
+#create-card > div,
+#update-card > div {
     margin-top: 1em;
     margin-bottom: 3em;
 }
+
+.deck-viewer-container {
+}
+
 
 #decks > div {
     margin-top: 1em;

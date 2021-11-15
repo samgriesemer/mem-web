@@ -133,7 +133,7 @@
         <textarea
             v-model='question'
             placeholder='Enter question text (Markdown)'
-            style='resize:none;'
+            style='resize:vertical;'
         ></textarea>
         <select v-model="deck">
             <option disabled value="">Select a deck</option>
@@ -153,7 +153,7 @@
                 v-bind:key='index'
                 v-model='answers[index]'
                 placeholder='Enter answer text (Markdown)'
-                style='width:98%;resize:none;margin-bottom:1em;'
+                style='width:98%;resize:vertical;margin-bottom:1em;'
             ></textarea>
             <button
                 v-on:click='add_answer'

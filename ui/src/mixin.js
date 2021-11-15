@@ -46,6 +46,28 @@ export function post(url, body) {
   });
 }
 
+export function del(url) {
+  return fetch(url, {
+    method:'DELETE',
+  }).then(response => {
+    return Promise.all([response, response.json()]);
+  }).then(([response, body]) => {
+    if (response.ok) {
+      return body;
+    }
+    if (body.message != null) {
+      throw Error(body.message);
+    } else {
+      throw Error(response.statusText);
+    }
+  }).then(data => {
+    return data;
+  }).catch(error => {
+    return error.message;
+  });
+}
+
+
 export function scheduler(url, callback, interval=-1) {
   let prom = get(url).then(data => callback(data));
   if (interval > 0) {
@@ -58,6 +80,10 @@ export function scheduler(url, callback, interval=-1) {
 
 export function http_get(url, callback) {
     return get(url).then(data => callback(data));
+}
+
+export function http_delete(url, callback) {
+    return del(url).then(data => callback(data));
 }
 
 export function http_post(url, body, callback) {
