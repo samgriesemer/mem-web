@@ -7,7 +7,7 @@
         <textarea
             v-model='card.question'
             placeholder='Enter question text (Markdown)'
-            style='resize:none;'
+            style='resize:vertical;'
         ></textarea>
         <select v-model="card.deck.name">
             <option disabled value="">Select a deck</option>

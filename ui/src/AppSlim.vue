@@ -1,6 +1,5 @@
 <template>
     <div class='row-2'>
-    <div class='col'>
     <div class='post-col' id='review'>
         <h1>
             Review
@@ -41,49 +40,6 @@
             </div>
         </div>
     </div>
-    <div v-if='update_visible' class='post-col' id='update-card'>
-        <h1>Editing card <i>#{{ update_card.id }}</i></h1><hr class='solid'>
-        <div class='update-card-container'>
-            <update-card
-                v-bind:update_card='update_card'
-                v-bind:decks='decks'
-                @update-card-post='handle_update_card_post'
-            />
-        </div>
-    </div>
-    <div class='post-col' id='create-card'>
-        <h1>Create card</h1><hr class='solid'>
-        <div class='create-card-container'>
-            <create-card
-                v-bind:decks="decks"
-                @create-card-post='handle_create_card_post'
-            />
-        </div>
-    </div>
-    </div>
-    <div class='col'>
-    <div class='post-col' id='decks'>
-        <h1>Decks</h1><hr class='solid'>
-        <div class='row-2'>
-            <deck
-                v-for="deck in decks"
-                v-bind:deck="deck"
-                v-bind:key="deck.id"
-                @view-deck='handle_view_deck'
-            />
-        </div>
-    </div>
-    <div v-if='deck_viewer_visible' class='post-col' id='decks'>
-        <h1>Viewing deck</h1><hr class='solid'>
-        <div class='deck-viewer-container'>
-            <deck-viewer
-                v-bind:deck_index="deck_index"
-                v-bind:deck_id="view_deck_id"
-                @edit-card='refresh_update_card'
-            />
-        </div>
-    </div>
-    </div>
     </div>
 </template>
 
@@ -93,10 +49,6 @@ import * as util from './mixin.js'
 
 import Review from './components/Review.vue'
 import Study from './components/Study.vue'
-import Deck from './components/Deck.vue'
-import DeckViewer from './components/DeckViewer.vue'
-import CreateCard from './components/CreateCard.vue'
-import UpdateCard from './components/UpdateCard.vue'
 
 let api_url = config.api_url;
 
@@ -105,15 +57,11 @@ const mixin = {
 }
 
 export default {
-    name: 'App',
+    name: 'AppSlim',
     mixins: [mixin],
     components: {
         Review,
         Study,
-        Deck,
-        DeckViewer,
-        CreateCard,
-        UpdateCard,
     },
     data() {
         return {
@@ -283,9 +231,7 @@ export default {
 
 <style>
 .review-container,
-.study-container,
-.create-card-container,
-.update-card-container {
+.study-container {
     padding: 1em;
     border: 1px solid #444;
     border-radius: 4px;
@@ -293,34 +239,11 @@ export default {
 }
 
 #review > div,
-#study > div,
-#create-card > div,
-#update-card > div {
+#study > div {
     margin-top: 1em;
     margin-bottom: 3em;
 }
 
-.update-card-container {
-    background: #646adc24;
-}
-
-.create-card-container {
-    background: #81b70536;
-}
-
-
-#decks > div {
-    margin-top: 1em;
-    grid-gap: 1em;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-#decks > div > div {
-    padding: 0.8em;
-    border: 1px solid #444;
-    border-radius: 4px;
-    box-shadow: 8px 8px 8px -4px rgba(0,0,0,0.12);
-}
 
 .notif {
     color: white;

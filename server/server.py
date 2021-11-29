@@ -101,14 +101,22 @@ def full_card(card, html=False):
         **vars(card),
         'deck': {**vars(card.deck)},
     }
-    dcard['percent_correct'] = round(100*card.correct_answer_count/max(card.total_answer_count,1),2)
 
-    timedelta = card.due_date - datetime.now()
-    dcard['time_remaining'] = timedelta.total_seconds()
-    if timedelta.total_seconds() > 0:
-        dcard['remaining_str'] = util.format_timedelta(timedelta)
+    dcard['percent_correct'] = -1
+    if card.correct_answer_count is not None:
+        dcard['percent_correct'] = round(100*card.correct_answer_count /
+                                         max(card.total_answer_count,1),2)
+
+    if card.due_date is not None:
+        timedelta = card.due_date - datetime.now()
+        dcard['time_remaining'] = timedelta.total_seconds()
+        if timedelta.total_seconds() > 0:
+            dcard['remaining_str'] = util.format_timedelta(timedelta)
+        else:
+            dcard['remaining_str'] = 'past due'
     else:
-        dcard['remaining_str'] = 'past due'
+        dcard['time_remaining'] = None
+        dcard['remaining_str'] = 'null due date'
 
     if html:
         dcard['html'] = parse_html(dcard)
@@ -174,14 +182,14 @@ def http_post_feedback(fb: Feedback):
 def http_study():
     with db.session_scope() as session:
         #out = study.study_core(session, deck)
-        out = study.study_any(session)
+        out = study.study_any_card(session)
         out['card'] = full_card(out['card'], html=True)
         return out
 
 @app.get("/study/{deck_name}")
 def http_study_deck(deck_name: str):
     with db.session_scope() as session:
-        out = study.study_core(session, deck)
+        out = study.study_deck(session, deck)
         return out
 
 @app.post("/post_study")
