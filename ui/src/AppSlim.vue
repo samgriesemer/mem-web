@@ -241,7 +241,6 @@ export default {
 #review > div,
 #study > div {
     margin-top: 1em;
-    margin-bottom: 3em;
 }
 
 

@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 from mem import db, cmd, cli_args, util
-from mem.cmd import review, study, create_card, update_card, delete_card, list_decks
+from mem.cmd import review, study, create_card, update_card, delete_card, list_decks, create_deck
 from mem.arg_types import Mode
 
 from fastapi import FastAPI
@@ -139,6 +139,7 @@ class NewCard(BaseModel):
     answers: Optional[List[str]] = None
     deck: str
     tags: Optional[List[str]] = None
+    create_deck: Optional[bool] = False
 
 class UpdateCard(BaseModel):
     card_id: int
@@ -165,8 +166,14 @@ def http_review_deck(deck_name: str):
     with queried name
     '''
     with db.session_scope() as session:
-        deck = db.get_deck_by_name(session, deck_name)
-        return review.review_deck(session, deck)
+        deck = db.try_get_deck_by_name(session, deck_name)
+        if deck:
+            return review.review_deck(session, deck)
+        else:
+            return {
+                'card': None,
+                'msg': 'No deck with name "{}"'.format(deck_name)
+            }
 
 @app.post("/post_feedback")
 def http_post_feedback(fb: Feedback):
@@ -221,7 +228,20 @@ def http_list_deck(deck_name: str):
 @app.post("/create_card")
 def http_create_card(card: NewCard):
     with db.session_scope() as session:
-        deck = db.get_deck_by_name(session, card.deck)
+        if card.create_deck:
+            deck = create_deck.create_deck(
+                session,
+                card.deck,
+                'Auto-created deck from {} site page'.format(card.deck),
+                True,
+            )
+        else:
+            deck = db.try_get_deck_by_name(session, card.deck)
+            if not deck:
+                return {
+                    'msg': 'No cards created; deck does not exist and create_deck flag not set.'
+                }
+
         created_cards = create_card.create_card(
             session,
             deck,

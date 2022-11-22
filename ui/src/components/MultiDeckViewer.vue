@@ -33,9 +33,6 @@
             </div>
         </div>
     </div>
-    <div v-else style='color:red'>
-        DeckViewer: Deck {{ deck_id }} not found in index
-    </div>
 </template>
 
 <script>
@@ -55,9 +52,9 @@ export default {
             required: true,
             type: Object
         },
-        deck_id: {
+        deck_ids: {
             required: true,
-            type: Number
+            type: Array 
         },
     },
     data() {
@@ -67,7 +64,6 @@ export default {
     },
     methods: {
         get_cards() {
-            if (this.deck == null) return;
             this.http_get(api_url+'/list_deck/'+this.deck.name, (data) => {
                 this.cards = data;
                 console.log(data);

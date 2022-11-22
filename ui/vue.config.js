@@ -3,6 +3,7 @@ module.exports = {
         entry: {
             'main': './src/main.js',
             'mainslim': './src/mainslim.js',
+            'article_embed': './src/article_embed.js',
         },
         output: {
             filename: 'js/[name].js',
@@ -12,7 +13,7 @@ module.exports = {
     css: {
         extract: {
           //ignoreOrder: true,
-          filename: 'css/style.css',
+          filename: 'css/[name]-style.css',
           chunkFilename: 'css/[name]-chunk.css',
         },
     },
